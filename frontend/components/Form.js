@@ -1,81 +1,88 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import * as yup from 'yup';
 
-const initialFormData = {
-  fullName: '',
-  // ...other form fields...
+const validationErrors = {
+  fullNameTooShort: 'full name must be at least 3 characters',
+  fullNameTooLong: 'full name must be at most 20 characters',
+  sizeIncorrect: 'size must be S or M or L'
 };
 
-const Form = () => {
-  const [formData, setFormData] = useState(initialFormData);
-  const [message, setMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // Add this line
+const schema = yup.object().shape({
+  fullName: yup.string()
+    .min(3, validationErrors.fullNameTooShort)
+    .max(20, validationErrors.fullNameTooLong)
+    .required(),
+  size: yup.string()
+    .oneOf(['S', 'M', 'L'], validationErrors.sizeIncorrect)
+    .required(),
+  toppings: yup.array().of(yup.string().required())
+});
 
-  const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
-  };
+const toppings = [
+  { topping_id: '1', text: 'Pepperoni' },
+  { topping_id: '2', text: 'Green Peppers' },
+  { topping_id: '3', text: 'Pineapple' },
+  { topping_id: '4', text: 'Mushrooms' },
+  { topping_id: '5', text: 'Ham' },
+];
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!isFormValid()) {
-      setErrorMessage('Full Name is required.'); // Set error message if form is invalid
-      return;
+export default function Form() {
+  const [form, setForm] = useState({ fullName: '', size: '', toppings: [] });
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    schema.validate(form, { abortEarly: false })
+      .then(() => setErrors({}))
+      .catch(err => setErrors(err.inner.reduce((acc, curr) => ({ ...acc, [curr.path]: curr.message }), {})));
+  }, [form]);
+
+  const handleChange = e => {
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      if (checked) {
+        setForm(prev => ({ ...prev, toppings: [...prev.toppings, value] }));
+      } else {
+        setForm(prev => ({ ...prev, toppings: prev.toppings.filter(topping => topping !== value) }));
+      }
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
     }
-    // ...submit form data...
-    setMessage(`Thank you for your order, ${formData.fullName}!`);
-    setFormData(initialFormData);
-  };
-
-  const isFormValid = () => {
-    // ...validate form data...
-    return formData.fullName;
   };
 
   return (
     <form>
-      <h1>Order Your Pizza</h1>
+      <h2>Order Your Pizza</h2>
+      <div className="input-group">
+        <div>
+          <label htmlFor="fullName">Full Name</label><br />
+          <input placeholder="Type full name" id="fullName" name="fullName" type="text" onChange={handleChange} />
+        </div>
+        {errors.fullName && <div className='error'>{errors.fullName}</div>}
+      </div>
 
-      <label htmlFor="fullName">Full Name:</label>
-      <input type="text" id="fullName" name="fullName" placeholder="Type full name" />
+      <div className="input-group">
+        <div>
+          <label htmlFor="size">Size</label><br />
+          <select id="size" name="size" onChange={handleChange}>
+            <option value="">----Choose Size----</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+          </select>
+        </div>
+        {errors.size && <div className='error'>{errors.size}</div>}
+      </div>
 
-      <label htmlFor="size">Size:</label>
-      <select id="size" name="size">
-        <option value="">----Choose Size----</option>
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
-        <option value="large">Large</option>
-      </select>
+      <div className="input-group">
+        {toppings.map(topping => (
+          <label key={topping.topping_id}>
+            <input name="toppings" value={topping.topping_id} type="checkbox" onChange={handleChange} />
+            {topping.text}<br />
+          </label>
+        ))}
+      </div>
 
-      <p>Choose your toppings:</p>
-      <label>
-        <input type="checkbox" name="toppings" value="pepperoni" />
-        Pepperoni
-      </label>
-      <label>
-        <input type="checkbox" name="toppings" value="greenPeppers" />
-        Green Peppers
-      </label>
-      <label>
-        <input type="checkbox" name="toppings" value="pineapple" />
-        Pineapple
-      </label>
-      <label>
-        <input type="checkbox" name="toppings" value="mushrooms" />
-        Mushrooms
-      </label>
-      <label>
-        <input type="checkbox" name="toppings" value="ham" />
-        Ham
-      </label>
-
-      <button type="submit">Submit</button>
-
-      {message && <p>{message}</p>}
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      <input type="submit" disabled={Object.keys(errors).length > 0} />
     </form>
   );
-};
-
-export default Form;
+}
