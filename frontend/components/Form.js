@@ -34,26 +34,46 @@ const Form = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="fullName">
-        Full Name:
-      </label>
-      <input type="text" id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} />
+    <form>
+      <h1>Order Your Pizza</h1>
 
-      {errorMessage && <p>{errorMessage}</p>} {/* Display error message for fullName */}
+      <label htmlFor="fullName">Full Name:</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Type full name" />
 
-      <label htmlFor="size">
-        Size:
-      </label>
-      <select id="size" name="size" value={formData.size} onChange={handleChange}>
-        {/* ...option elements for different sizes... */}
+      <label htmlFor="size">Size:</label>
+      <select id="size" name="size">
+        <option value="">----Choose Size----</option>
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
       </select>
 
-      {errorMessage && <p>{errorMessage}</p>} {/* Display error message for size */}
+      <p>Choose your toppings:</p>
+      <label>
+        <input type="checkbox" name="toppings" value="pepperoni" />
+        Pepperoni
+      </label>
+      <label>
+        <input type="checkbox" name="toppings" value="greenPeppers" />
+        Green Peppers
+      </label>
+      <label>
+        <input type="checkbox" name="toppings" value="pineapple" />
+        Pineapple
+      </label>
+      <label>
+        <input type="checkbox" name="toppings" value="mushrooms" />
+        Mushrooms
+      </label>
+      <label>
+        <input type="checkbox" name="toppings" value="ham" />
+        Ham
+      </label>
 
-      <input type="submit" value="Submit" disabled={!isFormValid()} />
+      <button type="submit">Submit</button>
 
       {message && <p>{message}</p>}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </form>
   );
 };

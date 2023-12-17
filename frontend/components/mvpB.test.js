@@ -1,13 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Form from './components/Form'; // Adjusted import statement
+import Form from './components/Form';
 
 
 test('form submission shows success message', async () => {
   render(<Form />);
 
-  // Fill out and submit the form...
   const fullNameInput = screen.getByLabelText(/Full Name:/i);
   fireEvent.change(fullNameInput, { target: { value: 'Fish' } });
 
