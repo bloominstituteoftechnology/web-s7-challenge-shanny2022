@@ -2,55 +2,57 @@ import React, { useState } from 'react';
 
 const initialFormData = {
   fullName: '',
-  size: '',
-  toppings: []
+  // ...other form fields...
 };
 
 const Form = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // Add this line
 
   const handleChange = (event) => {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!isFormValid()) {
+      setErrorMessage('Full Name is required.'); // Set error message if form is invalid
+      return;
+    }
+    // ...submit form data...
     setMessage(`Thank you for your order, ${formData.fullName}!`);
     setFormData(initialFormData);
   };
 
   const isFormValid = () => {
-    return formData.fullName && formData.size;
+    // ...validate form data...
+    return formData.fullName;
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>
+      <label htmlFor="fullName">
         Full Name:
-        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
       </label>
-      <label>
+      <input type="text" id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} />
+
+      {errorMessage && <p>{errorMessage}</p>} {/* Display error message for fullName */}
+
+      <label htmlFor="size">
         Size:
-        <select name="size" value={formData.size} onChange={handleChange}>
-          <option value="">Select</option>
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-        </select>
       </label>
-      <label>
-        Toppings:
-        <input type="checkbox" name="toppings" value="1" onChange={handleChange} /> Pepperoni
-        <input type="checkbox" name="toppings" value="2" onChange={handleChange} /> Green Peppers
-        <input type="checkbox" name="toppings" value="3" onChange={handleChange} /> Pineapple
-        <input type="checkbox" name="toppings" value="4" onChange={handleChange} /> Mushrooms
-        <input type="checkbox" name="toppings" value="5" onChange={handleChange} /> Ham
-      </label>
+      <select id="size" name="size" value={formData.size} onChange={handleChange}>
+        {/* ...option elements for different sizes... */}
+      </select>
+
+      {errorMessage && <p>{errorMessage}</p>} {/* Display error message for size */}
+
       <input type="submit" value="Submit" disabled={!isFormValid()} />
+
       {message && <p>{message}</p>}
     </form>
   );

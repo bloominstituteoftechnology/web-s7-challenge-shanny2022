@@ -1,14 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Form from './Form';
+import Form from './components/Form'; // Adjusted import statement
+
 
 test('form submission shows success message', async () => {
   render(<Form />);
-
-  test('Validation of `size` renders correct error message', async () => {
-    // ...test code...
-  }, 3000); // Increase timeout to 3000ms
 
   // Fill out and submit the form...
   const fullNameInput = screen.getByLabelText(/Full Name:/i);
@@ -28,4 +25,4 @@ describe('Form', () => {
     render(<Form />);
     expect(screen.getByText(/Order Your Pizza/i)).toBeInTheDocument();
   });
-});
+}); // Add this block of tests
