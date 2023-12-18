@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "taskkill /F /IM node.exe /T && concurrently \"npm run backend\" \"npm run frontend\"",
-    "test": "jest --watchAll --verbose",
+    "test": "cg-jest run -- mvpB.test.js --runInBand --forceExit --detectOpenHandles",
     "build": "cross-env NODE_ENV=production webpack",
     "frontend": "webpack serve --open",
     "backend": "node backend/server.js",
